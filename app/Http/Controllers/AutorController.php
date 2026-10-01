@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Autor;
+use App\Services\AutorService;
 use Illuminate\Http\Request;
 
 class AutorController extends Controller
@@ -14,40 +14,33 @@ class AutorController extends Controller
         'biografia' => 'nullable|string',
     ];
 
+    public function __construct(private AutorService $service) {}
+
     public function index()
     {
-        return Autor::all();
+        return $this->service->listar();
     }
 
     public function show($id)
     {
-        return Autor::findOrFail($id);
+        return $this->service->buscar($id);
     }
 
     public function store(Request $request)
     {
-        $autor = Autor::create($request->validate($this->regras));
+        $autor = $this->service->criar($request->validate($this->regras));
 
         return response()->json($autor, 201);
     }
 
     public function update(Request $request, $id)
     {
-        $autor = Autor::findOrFail($id);
-        $autor->update($request->validate($this->regras));
-
-        return $autor;
+        return $this->service->atualizar($id, $request->validate($this->regras));
     }
 
     public function destroy($id)
     {
-        $autor = Autor::findOrFail($id);
-
-        if ($autor->livros()->exists()) {
-            return response()->json(['message' => 'Não é possível excluir um autor que possui livros cadastrados.'], 409);
-        }
-
-        $autor->delete();
+        $this->service->excluir($id);
 
         return response()->noContent();
     }

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Categoria;
+use App\Services\CategoriaService;
 use Illuminate\Http\Request;
 
 class CategoriaController extends Controller
@@ -12,40 +12,33 @@ class CategoriaController extends Controller
         'descricao' => 'nullable|string|max:255',
     ];
 
+    public function __construct(private CategoriaService $service) {}
+
     public function index()
     {
-        return Categoria::all();
+        return $this->service->listar();
     }
 
     public function show($id)
     {
-        return Categoria::findOrFail($id);
+        return $this->service->buscar($id);
     }
 
     public function store(Request $request)
     {
-        $categoria = Categoria::create($request->validate($this->regras));
+        $categoria = $this->service->criar($request->validate($this->regras));
 
         return response()->json($categoria, 201);
     }
 
     public function update(Request $request, $id)
     {
-        $categoria = Categoria::findOrFail($id);
-        $categoria->update($request->validate($this->regras));
-
-        return $categoria;
+        return $this->service->atualizar($id, $request->validate($this->regras));
     }
 
     public function destroy($id)
     {
-        $categoria = Categoria::findOrFail($id);
-
-        if ($categoria->livros()->exists()) {
-            return response()->json(['message' => 'Não é possível excluir uma categoria que possui livros cadastrados.'], 409);
-        }
-
-        $categoria->delete();
+        $this->service->excluir($id);
 
         return response()->noContent();
     }

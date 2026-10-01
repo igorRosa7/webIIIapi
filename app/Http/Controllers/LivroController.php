@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Livro;
+use App\Services\LivroService;
 use Illuminate\Http\Request;
 
 class LivroController extends Controller
@@ -17,34 +17,33 @@ class LivroController extends Controller
         'idcategoria' => 'required|integer|exists:categoria,idcategoria',
     ];
 
+    public function __construct(private LivroService $service) {}
+
     public function index()
     {
-        return Livro::with(['autor', 'categoria'])->get();
+        return $this->service->listar();
     }
 
     public function show($id)
     {
-        return Livro::with(['autor', 'categoria'])->findOrFail($id);
+        return $this->service->buscar($id);
     }
 
     public function store(Request $request)
     {
-        $livro = Livro::create($request->validate($this->regras));
+        $livro = $this->service->criar($request->validate($this->regras));
 
-        return response()->json($livro->load(['autor', 'categoria']), 201);
+        return response()->json($livro, 201);
     }
 
     public function update(Request $request, $id)
     {
-        $livro = Livro::findOrFail($id);
-        $livro->update($request->validate($this->regras));
-
-        return $livro->load(['autor', 'categoria']);
+        return $this->service->atualizar($id, $request->validate($this->regras));
     }
 
     public function destroy($id)
     {
-        Livro::findOrFail($id)->delete();
+        $this->service->excluir($id);
 
         return response()->noContent();
     }

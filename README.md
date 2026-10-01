@@ -21,6 +21,21 @@ autor (1) ──── (N) livro (N) ──── (1) categoria
 | `categoria` | `idcategoria`, `nome`, `descricao` |
 | `livro` | `idlivro`, `titulo`, `isbn`, `anopublicacao`, `descricao`, `paginas`, `idautor`, `idcategoria` |
 
+## Organização do código
+
+Cada requisição passa por três camadas:
+
+```
+Rota → Controller → Service → Repository → Model (banco)
+```
+
+| Camada | Pasta | Responsabilidade |
+|---|---|---|
+| **Controller** | `app/Http/Controllers` | Recebe a requisição, valida os dados e devolve a resposta HTTP |
+| **Service** | `app/Services` | Regras de negócio (ex.: não excluir autor com livros) |
+| **Repository** | `app/Repositories` | Acesso ao banco. O `BaseRepository` tem as operações comuns (listar, buscar, criar, atualizar, excluir) |
+| **Model** | `app/Models` | Representa as tabelas e os relacionamentos |
+
 ## Como rodar
 
 ```bash
