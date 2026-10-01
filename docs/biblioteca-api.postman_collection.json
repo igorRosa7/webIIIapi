@@ -33,6 +33,18 @@
         {
             "key": "token",
             "value": ""
+        },
+        {
+            "key": "autor_id",
+            "value": ""
+        },
+        {
+            "key": "categoria_id",
+            "value": ""
+        },
+        {
+            "key": "livro_id",
+            "value": ""
         }
     ],
     "item": [
@@ -167,7 +179,18 @@
                         "url": {
                             "raw": "{{base_url}}/api/autores"
                         }
-                    }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "if (pm.response.code === 201) { pm.collectionVariables.set(\"autor_id\", pm.response.json().idautor); }"
+                                ]
+                            }
+                        }
+                    ]
                 },
                 {
                     "name": "Atualizar autor",
@@ -184,8 +207,9 @@
                             "raw": "{\n  \"nome\": \"Clarice Lispector\",\n  \"nacionalidade\": \"Brasileira\",\n  \"nascimento\": \"1920-12-10\",\n  \"biografia\": \"Autora de A Hora da Estrela.\"\n}"
                         },
                         "url": {
-                            "raw": "{{base_url}}/api/autores/3"
-                        }
+                            "raw": "{{base_url}}/api/autores/{{autor_id}}"
+                        },
+                        "description": "Usa o id salvo pelo \"Cadastrar\" (variável autor_id)."
                     }
                 },
                 {
@@ -193,8 +217,9 @@
                     "request": {
                         "method": "DELETE",
                         "url": {
-                            "raw": "{{base_url}}/api/autores/3"
-                        }
+                            "raw": "{{base_url}}/api/autores/{{autor_id}}"
+                        },
+                        "description": "Usa o id salvo pelo \"Cadastrar\" (variável autor_id)."
                     }
                 }
             ]
@@ -237,7 +262,18 @@
                         "url": {
                             "raw": "{{base_url}}/api/categorias"
                         }
-                    }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "if (pm.response.code === 201) { pm.collectionVariables.set(\"categoria_id\", pm.response.json().idcategoria); }"
+                                ]
+                            }
+                        }
+                    ]
                 },
                 {
                     "name": "Atualizar categoria",
@@ -254,8 +290,9 @@
                             "raw": "{\n  \"nome\": \"Fantasia\",\n  \"descricao\": \"Mundos imaginários e magia.\"\n}"
                         },
                         "url": {
-                            "raw": "{{base_url}}/api/categorias/3"
-                        }
+                            "raw": "{{base_url}}/api/categorias/{{categoria_id}}"
+                        },
+                        "description": "Usa o id salvo pelo \"Cadastrar\" (variável categoria_id)."
                     }
                 },
                 {
@@ -263,8 +300,9 @@
                     "request": {
                         "method": "DELETE",
                         "url": {
-                            "raw": "{{base_url}}/api/categorias/3"
-                        }
+                            "raw": "{{base_url}}/api/categorias/{{categoria_id}}"
+                        },
+                        "description": "Usa o id salvo pelo \"Cadastrar\" (variável categoria_id)."
                     }
                 }
             ]
@@ -309,7 +347,18 @@
                         "url": {
                             "raw": "{{base_url}}/api/livros"
                         }
-                    }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "if (pm.response.code === 201) { pm.collectionVariables.set(\"livro_id\", pm.response.json().idlivro); }"
+                                ]
+                            }
+                        }
+                    ]
                 },
                 {
                     "name": "Atualizar livro",
@@ -326,8 +375,9 @@
                             "raw": "{\n  \"titulo\": \"A Revolução dos Bichos\",\n  \"isbn\": \"978-8535909555\",\n  \"anopublicacao\": 1945,\n  \"descricao\": \"Animais tomam a fazenda e criam sua própria ditadura.\",\n  \"paginas\": 152,\n  \"idautor\": 2,\n  \"idcategoria\": 2\n}"
                         },
                         "url": {
-                            "raw": "{{base_url}}/api/livros/4"
-                        }
+                            "raw": "{{base_url}}/api/livros/{{livro_id}}"
+                        },
+                        "description": "Usa o id salvo pelo \"Cadastrar\" (variável livro_id)."
                     }
                 },
                 {
@@ -335,8 +385,9 @@
                     "request": {
                         "method": "DELETE",
                         "url": {
-                            "raw": "{{base_url}}/api/livros/4"
-                        }
+                            "raw": "{{base_url}}/api/livros/{{livro_id}}"
+                        },
+                        "description": "Usa o id salvo pelo \"Cadastrar\" (variável livro_id)."
                     }
                 }
             ]
