@@ -1,8 +1,10 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\AutorController;
+use App\Http\Controllers\CategoriaController;
+use App\Http\Controllers\LivroController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+Route::apiResource('autores', AutorController::class)->parameters(['autores' => 'id']);
+Route::apiResource('categorias', CategoriaController::class)->parameters(['categorias' => 'id']);
+Route::apiResource('livros', LivroController::class)->parameters(['livros' => 'id']);
