@@ -18,12 +18,15 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // O seed roda a cada deploy, então só popula um banco vazio
+        if (Autor::exists()) {
+            return;
+        }
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        User::firstOrCreate(
+            ['email' => 'test@example.com'],
+            ['name' => 'Test User', 'password' => 'password'],
+        );
 
         $machado = Autor::create([
             'nome' => 'Machado de Assis',
