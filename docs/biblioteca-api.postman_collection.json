@@ -1,0 +1,345 @@
+{
+    "info": {
+        "name": "Biblioteca API",
+        "description": "API REST de livros, autores e categorias (Laravel + Sanctum).\n\n1. Rode **Auth > Login**: o token é salvo automaticamente na variável `token`.\n2. As demais requisições já enviam `Authorization: Bearer {{token}}`.\n\nAs consultas (GET) são públicas; cadastro, alteração e exclusão exigem token.",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "auth": {
+        "type": "bearer",
+        "bearer": [
+            {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+            }
+        ]
+    },
+    "event": [
+        {
+            "listen": "prerequest",
+            "script": {
+                "type": "text/javascript",
+                "exec": [
+                    "pm.request.headers.upsert({ key: 'Accept', value: 'application/json' });"
+                ]
+            }
+        }
+    ],
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://127.0.0.1:8000"
+        },
+        {
+            "key": "token",
+            "value": ""
+        }
+    ],
+    "item": [
+        {
+            "name": "Auth",
+            "item": [
+                {
+                    "name": "Registrar",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "if (pm.response.code === 201) { pm.collectionVariables.set(\"token\", pm.response.json().token); }"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Maria Silva\",\n  \"email\": \"maria@email.com\",\n  \"password\": \"123456\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/register"
+                        },
+                        "description": "Cadastra um usuário e retorna o token."
+                    }
+                },
+                {
+                    "name": "Login",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "if (pm.response.code === 200) { pm.collectionVariables.set(\"token\", pm.response.json().token); }"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"password\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/login"
+                        },
+                        "description": "Faz login e salva o token na variável da collection."
+                    }
+                },
+                {
+                    "name": "Usuário logado",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/api/user"
+                        },
+                        "description": "Retorna o usuário dono do token."
+                    }
+                },
+                {
+                    "name": "Logout",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "{{base_url}}/api/logout"
+                        },
+                        "description": "Revoga o token atual."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Autores",
+            "item": [
+                {
+                    "name": "Listar autores",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/api/autores"
+                        }
+                    }
+                },
+                {
+                    "name": "Buscar autor",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/api/autores/1"
+                        }
+                    }
+                },
+                {
+                    "name": "Cadastrar autor",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"nome\": \"Clarice Lispector\",\n  \"nacionalidade\": \"Brasileira\",\n  \"nascimento\": \"1920-12-10\",\n  \"biografia\": \"Escritora e jornalista.\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/autores"
+                        }
+                    }
+                },
+                {
+                    "name": "Atualizar autor",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"nome\": \"Clarice Lispector\",\n  \"nacionalidade\": \"Brasileira\",\n  \"nascimento\": \"1920-12-10\",\n  \"biografia\": \"Autora de A Hora da Estrela.\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/autores/3"
+                        }
+                    }
+                },
+                {
+                    "name": "Excluir autor",
+                    "request": {
+                        "method": "DELETE",
+                        "url": {
+                            "raw": "{{base_url}}/api/autores/3"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Categorias",
+            "item": [
+                {
+                    "name": "Listar categorias",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/api/categorias"
+                        }
+                    }
+                },
+                {
+                    "name": "Buscar categoria",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/api/categorias/1"
+                        }
+                    }
+                },
+                {
+                    "name": "Cadastrar categoria",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"nome\": \"Fantasia\",\n  \"descricao\": \"Histórias em mundos imaginários.\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/categorias"
+                        }
+                    }
+                },
+                {
+                    "name": "Atualizar categoria",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"nome\": \"Fantasia\",\n  \"descricao\": \"Mundos imaginários e magia.\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/categorias/3"
+                        }
+                    }
+                },
+                {
+                    "name": "Excluir categoria",
+                    "request": {
+                        "method": "DELETE",
+                        "url": {
+                            "raw": "{{base_url}}/api/categorias/3"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Livros",
+            "item": [
+                {
+                    "name": "Listar livros",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/api/livros"
+                        },
+                        "description": "Retorna os livros com autor e categoria."
+                    }
+                },
+                {
+                    "name": "Buscar livro",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/api/livros/1"
+                        },
+                        "description": "Retorna o livro com autor e categoria."
+                    }
+                },
+                {
+                    "name": "Cadastrar livro",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"titulo\": \"A Revolução dos Bichos\",\n  \"isbn\": \"978-8535909555\",\n  \"anopublicacao\": 1945,\n  \"descricao\": \"Fábula sobre poder e corrupção.\",\n  \"paginas\": 152,\n  \"idautor\": 2,\n  \"idcategoria\": 2\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/livros"
+                        }
+                    }
+                },
+                {
+                    "name": "Atualizar livro",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"titulo\": \"A Revolução dos Bichos\",\n  \"isbn\": \"978-8535909555\",\n  \"anopublicacao\": 1945,\n  \"descricao\": \"Animais tomam a fazenda e criam sua própria ditadura.\",\n  \"paginas\": 152,\n  \"idautor\": 2,\n  \"idcategoria\": 2\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/livros/4"
+                        }
+                    }
+                },
+                {
+                    "name": "Excluir livro",
+                    "request": {
+                        "method": "DELETE",
+                        "url": {
+                            "raw": "{{base_url}}/api/livros/4"
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}
