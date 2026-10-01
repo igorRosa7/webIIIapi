@@ -45,6 +45,10 @@
         {
             "key": "livro_id",
             "value": ""
+        },
+        {
+            "key": "user_id",
+            "value": "1"
         }
     ],
     "item": [
@@ -59,7 +63,10 @@
                             "script": {
                                 "type": "text/javascript",
                                 "exec": [
-                                    "if (pm.response.code === 201) { pm.collectionVariables.set(\"token\", pm.response.json().token); }"
+                                    "if (pm.response.code === 201) {",
+                                    "  pm.collectionVariables.set(\"token\", pm.response.json().token);",
+                                    "  pm.collectionVariables.set(\"user_id\", pm.response.json().user.id);",
+                                    "}"
                                 ]
                             }
                         }
@@ -93,7 +100,10 @@
                             "script": {
                                 "type": "text/javascript",
                                 "exec": [
-                                    "if (pm.response.code === 200) { pm.collectionVariables.set(\"token\", pm.response.json().token); }"
+                                    "if (pm.response.code === 200) {",
+                                    "  pm.collectionVariables.set(\"token\", pm.response.json().token);",
+                                    "  pm.collectionVariables.set(\"user_id\", pm.response.json().user.id);",
+                                    "}"
                                 ]
                             }
                         }
@@ -388,6 +398,59 @@
                             "raw": "{{base_url}}/api/livros/{{livro_id}}"
                         },
                         "description": "Usa o id salvo pelo \"Cadastrar\" (variável livro_id)."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Usuários",
+            "item": [
+                {
+                    "name": "Listar usuários",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/api/users"
+                        }
+                    }
+                },
+                {
+                    "name": "Buscar usuário",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/api/users/{{user_id}}"
+                        }
+                    }
+                },
+                {
+                    "name": "Atualizar usuário",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"test@example.com\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/users/{{user_id}}"
+                        },
+                        "description": "Só altera a própria conta (senão 403). A senha (password) é opcional."
+                    }
+                },
+                {
+                    "name": "Excluir usuário",
+                    "request": {
+                        "method": "DELETE",
+                        "url": {
+                            "raw": "{{base_url}}/api/users/{{user_id}}"
+                        },
+                        "description": "Só exclui a própria conta (senão 403)."
                     }
                 }
             ]

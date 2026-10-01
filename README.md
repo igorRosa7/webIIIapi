@@ -32,7 +32,7 @@ Rota → Controller → Service → Repository → Model (banco)
 | Camada | Pasta | Responsabilidade |
 |---|---|---|
 | **Controller** | `app/Http/Controllers` | Recebe a requisição, valida os dados e devolve a resposta HTTP |
-| **Service** | `app/Services` | Regras de negócio (ex.: não excluir autor com livros) |
+| **Service** | `app/Services` | Regras de negócio (ex.: não excluir autor com livros, usuário só altera a própria conta) |
 | **Repository** | `app/Repositories` | Acesso ao banco. O `BaseRepository` tem as operações comuns (listar, buscar, criar, atualizar, excluir) |
 | **Model** | `app/Models` | Representa as tabelas e os relacionamentos |
 
@@ -97,6 +97,12 @@ Envie também `Accept: application/json` em todas as requisições.
 | POST | `/api/livros` | Cadastra um livro | Sim |
 | PUT | `/api/livros/{id}` | Atualiza um livro | Sim |
 | DELETE | `/api/livros/{id}` | Remove um livro | Sim |
+| GET | `/api/users` | Lista os usuários | Sim |
+| GET | `/api/users/{id}` | Retorna um usuário | Sim |
+| PUT | `/api/users/{id}` | Atualiza a **própria** conta (senha opcional) | Sim |
+| DELETE | `/api/users/{id}` | Exclui a **própria** conta | Sim |
+
+O cadastro de usuários é feito pelo `POST /api/register`.
 
 ### Exemplo: cadastrar um livro
 
@@ -152,6 +158,7 @@ Accept: application/json
 | 201 | Registro criado |
 | 204 | Registro excluído |
 | 401 | Sem token, token inválido ou login incorreto |
+| 403 | Tentativa de alterar ou excluir a conta de outro usuário |
 | 404 | Registro não encontrado |
 | 409 | Exclusão de autor ou categoria que ainda tem livros |
 | 422 | Dados inválidos (a resposta lista os erros de cada campo) |
