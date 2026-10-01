@@ -1,59 +1,150 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Biblioteca API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+API REST em **Laravel** para consultar e gerenciar **livros**, **autores** e **categorias**. Todas as respostas são em **JSON**, o banco é **MySQL/MariaDB** (criado por migrations) e a autenticação usa **Laravel Sanctum**.
 
-## About Laravel
+## Tecnologias
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- PHP 8.2+
+- Laravel 12
+- MySQL ou MariaDB
+- Laravel Sanctum (autenticação por token)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Banco de dados
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+```
+autor (1) ──── (N) livro (N) ──── (1) categoria
+```
 
-## Learning Laravel
+| Tabela | Campos |
+|---|---|
+| `autor` | `idautor`, `nome`, `nacionalidade`, `nascimento`, `biografia` |
+| `categoria` | `idcategoria`, `nome`, `descricao` |
+| `livro` | `idlivro`, `titulo`, `isbn`, `anopublicacao`, `descricao`, `paginas`, `idautor`, `idcategoria` |
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## Como rodar
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```bash
+composer install
+cp .env.example .env
+php artisan key:generate
+```
 
-## Laravel Sponsors
+No `.env`, configure o banco:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=biblioteca
+DB_USERNAME=root
+DB_PASSWORD=
+```
 
-### Premium Partners
+Crie o banco `biblioteca` no MySQL e rode:
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+```bash
+php artisan migrate --seed   # cria as tabelas e os dados de exemplo
+php artisan serve            # inicia em http://127.0.0.1:8000
+```
 
-## Contributing
+Usuário de exemplo criado pelo seed: `test@example.com` / `password`.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Autenticação
 
-## Code of Conduct
+As consultas (**GET**) são públicas. Cadastro, alteração e exclusão (**POST, PUT, DELETE**) exigem token.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+1. Faça login em `POST /api/login` (ou cadastre-se em `POST /api/register`).
+2. Copie o `token` da resposta.
+3. Envie nas próximas requisições o header `Authorization: Bearer {token}`.
 
-## Security Vulnerabilities
+Envie também `Accept: application/json` em todas as requisições.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Endpoints
 
-## License
+| Método | Rota | Descrição | Token |
+|---|---|---|---|
+| POST | `/api/register` | Cadastra um usuário e retorna o token | Não |
+| POST | `/api/login` | Faz login e retorna o token | Não |
+| POST | `/api/logout` | Revoga o token atual | Sim |
+| GET | `/api/user` | Dados do usuário logado | Sim |
+| GET | `/api/autores` | Lista os autores | Não |
+| GET | `/api/autores/{id}` | Retorna um autor | Não |
+| POST | `/api/autores` | Cadastra um autor | Sim |
+| PUT | `/api/autores/{id}` | Atualiza um autor | Sim |
+| DELETE | `/api/autores/{id}` | Remove um autor | Sim |
+| GET | `/api/categorias` | Lista as categorias | Não |
+| GET | `/api/categorias/{id}` | Retorna uma categoria | Não |
+| POST | `/api/categorias` | Cadastra uma categoria | Sim |
+| PUT | `/api/categorias/{id}` | Atualiza uma categoria | Sim |
+| DELETE | `/api/categorias/{id}` | Remove uma categoria | Sim |
+| GET | `/api/livros` | Lista os livros **com autor e categoria** | Não |
+| GET | `/api/livros/{id}` | Retorna um livro **com autor e categoria** | Não |
+| POST | `/api/livros` | Cadastra um livro | Sim |
+| PUT | `/api/livros/{id}` | Atualiza um livro | Sim |
+| DELETE | `/api/livros/{id}` | Remove um livro | Sim |
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Exemplo: cadastrar um livro
+
+```http
+POST /api/livros
+Authorization: Bearer {token}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "titulo": "A Revolução dos Bichos",
+  "isbn": "978-8535909555",
+  "anopublicacao": 1945,
+  "descricao": "Fábula sobre poder e corrupção.",
+  "paginas": 152,
+  "idautor": 2,
+  "idcategoria": 2
+}
+```
+
+### Exemplo: resposta de `GET /api/livros/1`
+
+```json
+{
+  "idlivro": 1,
+  "titulo": "Dom Casmurro",
+  "isbn": "978-8535910667",
+  "anopublicacao": 1899,
+  "descricao": "Bentinho relembra sua vida e o ciúme por Capitu.",
+  "paginas": 256,
+  "idautor": 1,
+  "idcategoria": 1,
+  "autor": {
+    "idautor": 1,
+    "nome": "Machado de Assis",
+    "nacionalidade": "Brasileira",
+    "nascimento": "1839-06-21",
+    "biografia": "Escritor brasileiro, fundador da Academia Brasileira de Letras."
+  },
+  "categoria": {
+    "idcategoria": 1,
+    "nome": "Romance",
+    "descricao": "Obras de ficção em prosa."
+  }
+}
+```
+
+## Códigos de resposta
+
+| Código | Quando |
+|---|---|
+| 200 | Consulta ou atualização feita |
+| 201 | Registro criado |
+| 204 | Registro excluído |
+| 401 | Sem token, token inválido ou login incorreto |
+| 404 | Registro não encontrado |
+| 409 | Exclusão de autor ou categoria que ainda tem livros |
+| 422 | Dados inválidos (a resposta lista os erros de cada campo) |
+
+## Postman
+
+A collection está em [`docs/biblioteca-api.postman_collection.json`](docs/biblioteca-api.postman_collection.json). No Postman, clique em **Import** e selecione o arquivo.
+
+- Rode **Auth > Login** primeiro: o token é salvo automaticamente e usado nas outras requisições.
+- **Cadastrar** salva o id criado, que é usado em **Atualizar** e **Excluir**.
+- Para testar a API publicada, altere a variável `base_url` da collection.
